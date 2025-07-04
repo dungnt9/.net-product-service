@@ -1,22 +1,23 @@
-using MediatR;
-using Microsoft.AspNetCore.Mvc;
+using MediatR; //mô hình Mediator giao tiếp giữa các phần khác nhau trong ứng dụng mà không cần liên kết trực tiếp
+using Microsoft.AspNetCore.Mvc; //thư viện cung cấp các lớp để tạo API như controller...
 using Application.Features.Products.Commands.CreateProduct;
 using Application.Features.Products.Queries.GetProduct;
 using Application.Features.Products.Queries.GetProducts;
 
 namespace API.Controllers;
-
+//Đánh dấu class này là một API controller để ASP.NET Core xử lý các request API
 [ApiController]
-[Route("api/[controller]")]
-public class ProductsController : ControllerBase
+//định tuyến
+[Route("api/[controller]")]   //[controller] sẽ tự động thay thế bằng tên của controller
+public class ProductsController : ControllerBase //controllers chỉ xử lý API (không trả về giao diện)
 {
-    private readonly IMediator _mediator;
+    private readonly IMediator _mediator;  //Dependency injection của thư viện MediatR. cho controller gửi Commands hoặc Queries để xử lý logic.
 
     public ProductsController(IMediator mediator)
     {
         _mediator = mediator;
     }
-
+    //Định nghĩa endpoint
     [HttpGet]
     public async Task<ActionResult<IEnumerable<GetProductsResponse>>> GetProducts()
     {

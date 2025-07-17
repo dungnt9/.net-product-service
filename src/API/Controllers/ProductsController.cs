@@ -9,7 +9,7 @@ namespace API.Controllers;
 [ApiController]
 //định tuyến
 [Route("api/[controller]")]   //[controller] sẽ tự động thay thế bằng tên của controller
-public class ProductsController : ControllerBase //controllers chỉ xử lý API (không trả về giao diện)
+public class ProductsController : ControllerBase //controllers chỉ xử lý API trả về JSON hoặc status code HTTP (không trả về giao diện)
 {
     private readonly IMediator _mediator;  //Dependency injection của thư viện MediatR. cho controller gửi Commands hoặc Queries để xử lý logic.
 
@@ -42,6 +42,7 @@ public class ProductsController : ControllerBase //controllers chỉ xử lý AP
     public async Task<ActionResult<CreateProductResponse>> CreateProduct(CreateProductCommand command)
     {
         var result = await _mediator.Send(command);
-        return CreatedAtAction(nameof(GetProduct), new { id = result.Id }, result);
+        return CreatedAtAction(nameof(GetProduct), new { id = result.Id }, result); //phương thức của ASP.NET Core để trả về HTTP 201 Created
+        //CreatedAtAction(string actionName, object routeValues, object value)
     }
 }

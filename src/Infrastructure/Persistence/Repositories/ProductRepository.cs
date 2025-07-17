@@ -7,7 +7,7 @@ namespace Infrastructure.Persistence.Repositories;
 public class ProductRepository : IProductRepository
 {
     private readonly ApplicationDbContext _context;
-
+    // Constructor nhận tham số ApplicationDbContext qua Dependency Injection -> ProductRepository có quyền truy cập vào database.
     public ProductRepository(ApplicationDbContext context)
     {
         _context = context;
@@ -29,8 +29,8 @@ public class ProductRepository : IProductRepository
 
     public async Task<Product> CreateAsync(Product product)
     {
-        _context.Products.Add(product);
-        await _context.SaveChangesAsync();
+        _context.Products.Add(product); // thêm vao database
+        await _context.SaveChangesAsync(); // lưu thay doi vao database
         return product;
     }
 

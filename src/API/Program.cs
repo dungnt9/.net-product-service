@@ -3,6 +3,7 @@ using Application;
 using Infrastructure;
 using Infrastructure.Persistence;
 using System.Diagnostics;  // hỗ trợ các tác vụ gỡ lỗi (debugging)
+using API.Services;
 
 // object builder để cấu hình và xây dựng ứng dụng Web bằng cách sử dụng các tham số dòng lệnh (args)
 var builder = WebApplication.CreateBuilder(args);
@@ -23,6 +24,7 @@ if (builder.Environment.IsDevelopment())
 builder.Services.AddControllers();  // Đăng ký service MVC Controller vào dependency injection container để sử dụng
 builder.Services.AddEndpointsApiExplorer(); // Kích hoạt API endpoints để ứng dụng có thể khám phá/hiển thị tài liệu API
 builder.Services.AddSwaggerGen();  // Kích hoạt Swagger để tạo giao diện tài liệu
+builder.Services.AddGrpc();  // Đăng ký gRPC services
 
 // Application & Infrastructure services
 // Đăng ký service trong tầng Application và Infrastructure với dependency injection container
@@ -52,6 +54,7 @@ if (app.Environment.IsDevelopment() || app.Environment.EnvironmentName == "Dev")
 app.UseCors("AllowAll");
 app.UseAuthorization();  // middleware xử lý xác thực và phân quyền
 app.MapControllers(); // Map (định tuyến) các controller để ứng dụng có thể xử lý các yêu cầu HTTP
+app.MapGrpcService<ProductGrpcService>(); // Map gRPC service endpoint
 
 // Auto migrate database
 // Tạo scope cho service để xử lý dữ liệu với cơ chế Dependency Injection

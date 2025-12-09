@@ -37,7 +37,9 @@ public class ProductGrpcService : ProductGrpc.ProductGrpcBase
             Stock = product.Stock,
             IsActive = product.IsActive,
             CreatedAt = product.CreatedAt.ToString("O"),
-            Found = true
+            Found = true,
+            CategoryId = product.CategoryId,
+            CategoryName = product.Category?.Name ?? ""
         };
     }
 
@@ -63,7 +65,9 @@ public class ProductGrpcService : ProductGrpc.ProductGrpcBase
                     Stock = product.Stock,
                     IsActive = product.IsActive,
                     CreatedAt = product.CreatedAt.ToString("O"),
-                    Found = true
+                    Found = true,
+                    CategoryId = product.CategoryId,
+                    CategoryName = product.Category?.Name ?? ""
                 });
             }
             else
@@ -73,5 +77,75 @@ public class ProductGrpcService : ProductGrpc.ProductGrpcBase
         }
 
         return response;
+    }
+
+    public override async Task<CheckStockResponse> CheckStock(CheckStockRequest request, ServerCallContext context)
+    {
+        _logger.LogInformation("gRPC CheckStock called for ProductId: {ProductId}, Quantity: {Quantity}", 
+            request.ProductId, request.Quantity);
+
+        var product = await _productRepository.GetByIdAsync(request.ProductId);
+
+        if (product == null)
+        {
+            return new CheckStockResponse
+            {
+                IsAvailable = false,
+                CurrentStock = 0,
+                Message = $"Product with ID {request.ProductId} not found"
+            };
+        }
+
+        var isAvailable = product.Stock >= request.Quantity;
+
+        return new CheckStockResponse
+        {
+            IsAvailable = isAvailable,
+            CurrentStock = product.Stock,
+            Message = isAvailable 
+                ? $"Stock available: {product.Stock}" 
+                : $"Insufficient stock. Available: {product.Stock}, Requested: {request.Quantity}"
+        };
+    }
+
+    public override async Task<UpdateStockResponse> UpdateStock(UpdateStockRequest request, ServerCallContext context)
+    {
+        _logger.LogInformation("gRPC UpdateStock called for ProductId: {ProductId}, QuantityChange: {QuantityChange}", 
+            request.ProductId, request.QuantityChange);
+
+        var product = await _productRepository.GetByIdAsync(request.ProductId);
+
+        if (product == null)
+        {
+            return new UpdateStockResponse
+            {
+                Success = false,
+                NewStock = 0,
+                Message = $"Product with ID {request.ProductId} not found"
+            };
+        }
+
+        var newStock = product.Stock + request.QuantityChange;
+        
+        if (newStock < 0)
+        {
+            return new UpdateStockResponse
+            {
+                Success = false,
+                NewStock = product.Stock,
+                Message = $"Cannot reduce stock below 0. Current: {product.Stock}, Change: {request.QuantityChange}"
+            };
+        }
+
+        var success = await _productRepository.UpdateStockAsync(request.ProductId, request.QuantityChange);
+
+        return new UpdateStockResponse
+        {
+            Success = success,
+            NewStock = newStock,
+            Message = success 
+                ? $"Stock updated successfully. New stock: {newStock}" 
+                : "Failed to update stock"
+        };
     }
 }

@@ -12,5 +12,8 @@ public record GetProductResponse(
     string Description,
     int Stock,
     bool IsActive,
-    DateTime CreatedAt
+    int CategoryId,
+    string CategoryName,
+    DateTime CreatedAt,
+    DateTime? UpdatedAt
 );

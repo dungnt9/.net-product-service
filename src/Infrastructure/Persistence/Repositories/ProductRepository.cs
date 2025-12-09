@@ -16,7 +16,17 @@ public class ProductRepository : IProductRepository
     public async Task<IEnumerable<Product>> GetAllAsync()
     {
         return await _context.Products
+            .Include(p => p.Category)
             .Where(p => p.IsActive)
+            .OrderBy(p => p.Name)
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<Product>> GetByCategoryIdAsync(int categoryId)
+    {
+        return await _context.Products
+            .Include(p => p.Category)
+            .Where(p => p.IsActive && p.CategoryId == categoryId)
             .OrderBy(p => p.Name)
             .ToListAsync();
     }
@@ -24,6 +34,7 @@ public class ProductRepository : IProductRepository
     public async Task<Product?> GetByIdAsync(int id)
     {
         return await _context.Products
+            .Include(p => p.Category)
             .FirstOrDefaultAsync(p => p.Id == id && p.IsActive);
     }
 
@@ -51,5 +62,30 @@ public class ProductRepository : IProductRepository
             product.UpdatedAt = DateTime.UtcNow;
             await _context.SaveChangesAsync();
         }
+    }
+
+    public async Task<bool> ExistsAsync(int id)
+    {
+        return await _context.Products.AnyAsync(p => p.Id == id && p.IsActive);
+    }
+
+    public async Task<bool> CheckStockAsync(int productId, int quantity)
+    {
+        var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == productId && p.IsActive);
+        return product != null && product.Stock >= quantity;
+    }
+
+    public async Task<bool> UpdateStockAsync(int productId, int quantityChange)
+    {
+        var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == productId && p.IsActive);
+        if (product == null) return false;
+        
+        var newStock = product.Stock + quantityChange;
+        if (newStock < 0) return false;
+        
+        product.Stock = newStock;
+        product.UpdatedAt = DateTime.UtcNow;
+        await _context.SaveChangesAsync();
+        return true;
     }
 }

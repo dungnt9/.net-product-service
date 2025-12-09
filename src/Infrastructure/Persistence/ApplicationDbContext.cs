@@ -12,9 +12,19 @@ public class ApplicationDbContext : DbContext
     }
 
     public DbSet<Product> Products { get; set; }    // Đại diện cho bảng `Products` trong cơ sở dữ liệu
+    public DbSet<Category> Categories { get; set; } // Đại diện cho bảng `Categories` trong cơ sở dữ liệu
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)  // cấu hình schema
     {
+        // Category configuration
+        modelBuilder.Entity<Category>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.Description).HasMaxLength(500);
+        });
+
+        // Product configuration
         modelBuilder.Entity<Product>(entity =>
         {
             entity.HasKey(e => e.Id);
@@ -22,6 +32,12 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.Brand).IsRequired().HasMaxLength(100);
             entity.Property(e => e.Description).HasMaxLength(1000);
             entity.Property(e => e.Price).HasColumnType("decimal(18,2)");
+            
+            // Relationship: Product belongs to Category
+            entity.HasOne(e => e.Category)
+                .WithMany(c => c.Products)
+                .HasForeignKey(e => e.CategoryId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
 
         base.OnModelCreating(modelBuilder);

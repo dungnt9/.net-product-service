@@ -10,5 +10,7 @@ public record GetProductsResponse(
     string Brand,
     decimal Price,
     int Stock,
-    bool IsActive
+    bool IsActive,
+    int CategoryId,
+    string CategoryName
 );

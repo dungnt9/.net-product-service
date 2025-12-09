@@ -1,6 +1,8 @@
 using MediatR; //mô hình Mediator giao tiếp giữa các phần khác nhau trong ứng dụng mà không cần liên kết trực tiếp
 using Microsoft.AspNetCore.Mvc; //thư viện cung cấp các lớp để tạo API như controller...
 using Application.Features.Products.Commands.CreateProduct;
+using Application.Features.Products.Commands.UpdateProduct;
+using Application.Features.Products.Commands.DeleteProduct;
 using Application.Features.Products.Queries.GetProduct;
 using Application.Features.Products.Queries.GetProducts;
 
@@ -41,8 +43,43 @@ public class ProductsController : ControllerBase //controllers chỉ xử lý AP
     [HttpPost]
     public async Task<ActionResult<CreateProductResponse>> CreateProduct(CreateProductCommand command)
     {
+        try
+        {
+            var result = await _mediator.Send(command);
+            return CreatedAtAction(nameof(GetProduct), new { id = result.Id }, result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
+    [HttpPut("{id}")]
+    public async Task<ActionResult<UpdateProductResponse>> UpdateProduct(int id, UpdateProductCommand command)
+    {
+        if (id != command.Id)
+            return BadRequest("ID mismatch");
+
+        try
+        {
+            var result = await _mediator.Send(command);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteProduct(int id)
+    {
+        var command = new DeleteProductCommand(id);
         var result = await _mediator.Send(command);
-        return CreatedAtAction(nameof(GetProduct), new { id = result.Id }, result); //phương thức của ASP.NET Core để trả về HTTP 201 Created
-        //CreatedAtAction(string actionName, object routeValues, object value)
+        
+        if (!result)
+            return NotFound();
+            
+        return NoContent();
     }
 }

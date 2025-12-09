@@ -27,7 +27,10 @@ public class GetProductHandler : IRequestHandler<GetProductQuery, GetProductResp
             product.Description,
             product.Stock,
             product.IsActive,
-            product.CreatedAt
+            product.CategoryId,
+            product.Category?.Name ?? "",
+            product.CreatedAt,
+            product.UpdatedAt
         );
     }
 }

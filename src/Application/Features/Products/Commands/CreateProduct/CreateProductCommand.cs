@@ -7,7 +7,8 @@ public record CreateProductCommand(
     string Brand,
     decimal Price,
     string Description,
-    int Stock
+    int Stock,
+    int CategoryId
 ) : IRequest<CreateProductResponse>; // kết quả xử lý của command này sẽ trả về một CreateProductResponse
 
 public record CreateProductResponse(
@@ -17,5 +18,7 @@ public record CreateProductResponse(
     decimal Price,
     string Description,
     int Stock,
+    int CategoryId,
+    string CategoryName,
     DateTime CreatedAt
 );

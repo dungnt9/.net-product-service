@@ -22,7 +22,9 @@ public class GetProductsHandler : IRequestHandler<GetProductsQuery, IEnumerable<
             p.Brand,
             p.Price,
             p.Stock,
-            p.IsActive
+            p.IsActive,
+            p.CategoryId,
+            p.Category?.Name ?? ""
         ));
     }
 }

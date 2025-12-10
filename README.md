@@ -112,12 +112,12 @@ src/API/GraphQL/
 
 ### Queries
 
-| Query           | Mô tả                          | Tham số     |
-| --------------- | ------------------------------ | ----------- |
-| `products`      | Lấy tất cả products            | -           |
-| `product(id)`   | Lấy product theo ID            | `id: Int!`  |
-| `categories`    | Lấy tất cả categories          | -           |
-| `category(id)`  | Lấy category theo ID           | `id: Int!`  |
+| Query          | Mô tả                 | Tham số    |
+| -------------- | --------------------- | ---------- |
+| `products`     | Lấy tất cả products   | -          |
+| `product(id)`  | Lấy product theo ID   | `id: Int!` |
+| `categories`   | Lấy tất cả categories | -          |
+| `category(id)` | Lấy category theo ID  | `id: Int!` |
 
 **Ví dụ Query:**
 
@@ -140,27 +140,29 @@ query {
 
 ### Mutations
 
-| Mutation         | Mô tả                | Input Type             |
-| ---------------- | -------------------- | ---------------------- |
-| `createProduct`  | Tạo product mới      | `CreateProductInput`   |
-| `updateProduct`  | Cập nhật product     | `UpdateProductInput`   |
-| `deleteProduct`  | Xóa product          | `id: Int!`             |
-| `createCategory` | Tạo category mới     | `CreateCategoryInput`  |
-| `updateCategory` | Cập nhật category    | `UpdateCategoryInput`  |
-| `deleteCategory` | Xóa category         | `id: Int!`             |
+| Mutation         | Mô tả             | Input Type            |
+| ---------------- | ----------------- | --------------------- |
+| `createProduct`  | Tạo product mới   | `CreateProductInput`  |
+| `updateProduct`  | Cập nhật product  | `UpdateProductInput`  |
+| `deleteProduct`  | Xóa product       | `id: Int!`            |
+| `createCategory` | Tạo category mới  | `CreateCategoryInput` |
+| `updateCategory` | Cập nhật category | `UpdateCategoryInput` |
+| `deleteCategory` | Xóa category      | `id: Int!`            |
 
 **Ví dụ Mutation:**
 
 ```graphql
 mutation {
-  createProduct(input: {
-    name: "iPhone 16"
-    brand: "Apple"
-    price: 999.99
-    description: "Latest iPhone"
-    stock: 100
-    categoryId: 1
-  }) {
+  createProduct(
+    input: {
+      name: "iPhone 16"
+      brand: "Apple"
+      price: 999.99
+      description: "Latest iPhone"
+      stock: 100
+      categoryId: 1
+    }
+  ) {
     id
     name
     category {
@@ -232,6 +234,7 @@ query {
 ### GraphQL Playground
 
 Truy cập `http://localhost:6001/graphql` để sử dụng GraphQL Playground tích hợp:
+
 - Viết và test queries/mutations
 - Xem schema documentation
 - Auto-complete và syntax highlighting
